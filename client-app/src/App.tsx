@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios'; //replaces fetch
-import { Header, Icon, List } from 'semantic-ui-react';
 
 function App() {
   const [activities, setActivities] = useState([])
@@ -16,14 +14,15 @@ useEffect( () => {
 }, [])
   return (
     <div>
-      <Header as='h2' icon={{name:'users'}} content='Reactivities'/>
-        <List>
+      <p className="text-3xl text-gray-700 font-bold mb-5">Reactivities</p>
+        <ul className='list-inside list-disc'> 
+        {/* order doesn't matter when defining classNames in tailwind */}
           {activities.map((activity: any) => (
-            <List.Item key={activity.id}>
+            <li key={activity.id}>
               {activity.title}
-            </List.Item>
+            </li>
           ))}
-        </List>
+        </ul>
     </div>
   );
 }
