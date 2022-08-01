@@ -35,7 +35,7 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         { //gets busy in here adding so many services, can move them to an extension class
-            services.AddControllers();
+            services.AddControllers();                
             services.AddApplicationServices(_config);
         }
 

@@ -27,11 +27,12 @@ namespace API
             catch(Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "And error occured during migration.");
+                logger.LogError(ex, "An error occured during migration.");
             }
             await host.RunAsync(); //important to re-add Run() or app won't run
         }
 
+        //This hostbuilder links Program.cs and Startup.cs. Program.cs calls CreateHostBuilder, which uses Startup class
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
