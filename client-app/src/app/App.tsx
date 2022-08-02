@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
-import axios from "axios"; //replaces fetch
 import { Activity } from "./models/activity";
 import Navbar from "./layout/Navbar";
 import ActivityDashboard from "../features/activities/dashboard/ActivityDashboard";
 import {v4 as uuid} from 'uuid'
-import { act } from "react-dom/test-utils";
+import agent from "./api/agent";
+import LoadingComponent from "./layout/LoadingComponent";
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([]); //specify types
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false); //type inferred
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios
-      .get<Activity[]>("http://localhost:5000/api/activities")
-      .then((response) => {
-        console.log(response);
-        setActivities(response.data);
-      });
+    agent.Activities.list()
+    .then(response => {
+      let activities: Activity[] = [];
+      response.forEach(activity => {
+        activity.date = activity.date.split('T')[0]
+        activities.push(activity)
+      })
+      setActivities(response)
+      setLoading(false);
+    });
   }, []);
 
   function handleSelectActivity(id: string){
@@ -39,15 +45,37 @@ function App() {
   }
 
   function handleCreateorEditActivity(activity: Activity){
-    activity.id ? setActivities([...activities.filter(act => act.id !== activity.id), activity]) //returns all other activities except match, then adds new activity
-    : setActivities([...activities, {...activity, id: uuid()}]); //adds new activity to the list
-    setEditMode(false);
-    setSelectedActivity(activity);
+    setSubmitting(true);
+    if (activity.id){
+      agent.Activities.update(activity).then(() => {
+        setActivities([...activities.filter(a => a.id !== activity.id), activity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      })
+    } else { //if no id, must be creating an activity from form so add GUID
+      activity.id = uuid();
+      agent.Activities.create(activity).then(() => {
+        setActivities([...activities, activity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      })
+    }
   }
 
   function handleDeleteActivity(id: string){
+    setSubmitting(true);
+    agent.Activities.delete(id).then(() => {
     setActivities([...activities.filter(act => act.id !== id)])
+    setSubmitting(false);
+    })
   }
+
+  if (loading) return (
+    <div className="absolute left-1/2 top-1/2">
+      <LoadingComponent content='Loading app' />
+    </div>)
 
   return (
     <div >
@@ -64,6 +92,7 @@ function App() {
           closeForm = {handleFormClose}
           createOrEdit={handleCreateorEditActivity}
           deleteActivity = {handleDeleteActivity}
+          submitting = {submitting}
         />
       </div>
     </div>
