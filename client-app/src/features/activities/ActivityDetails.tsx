@@ -1,19 +1,17 @@
 import React from "react";
-import { Activity } from "../../app/models/activity";
-
-interface Props {
-  activity: Activity;
-  cancelSelectActivity: () => void;
-  openForm: (id?: string) => void;
-  closeForm: () => void;
-}
+import LoadingComponent from "../../app/layout/LoadingComponent";
+import { useStore } from "../../app/stores/store";
 
 
+export default function ActivityDetails() {
+  const {activityStore} = useStore();
+  const {selectedActivity: activity, openForm, cancelSelectedActivity} = activityStore;
 
-export default function ActivityDetails({ activity, cancelSelectActivity, openForm, closeForm }: Props) {
+  if (!activity) return <LoadingComponent />;
+
   return (
-    <div className="">
-      <div className="rounded-lg shadow-lg bg-white max-w-m">
+    <div className=" w-96 max-w-lg min-w-fit">
+      <div className="rounded-lg shadow-lg bg-white">
         <a href="#!">
           <img
             className="rounded-t-lg"
@@ -37,8 +35,7 @@ export default function ActivityDetails({ activity, cancelSelectActivity, openFo
               type="button"
               className=" inline-block px-6 py-2.5 bg-gray-300 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-400 hover:shadow-lg focus:bg-gray-400 focus:shadow-lg focus:outline-none focus:focus:ring-0 active:bg-gray-500 active:shadow-lg transition duration-150 ease-in-out"
               onClick = {() => {
-                cancelSelectActivity()
-                closeForm()}}
+                cancelSelectedActivity()}}
             >
               Cancel
             </button>

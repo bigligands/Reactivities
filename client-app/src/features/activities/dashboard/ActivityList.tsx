@@ -1,15 +1,13 @@
+import { observer } from "mobx-react-lite";
 import React, { SyntheticEvent, useState } from "react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/store";
 
-interface Props {
-  activities: Activity[];
-  selectActivity: (id: string) => void;
-  deleteActivity: (id: string) => void;
-  submitting: boolean;
-}
 
-export default function ActivityList({ activities, selectActivity, deleteActivity, submitting }: Props) {
+export default observer(function ActivityList() {
+
+  const {activityStore} = useStore();
+  const {deleteActivity, activitiesByDate, loading} = activityStore;
   const [target, setTarget] = useState('');
 
   function handleActivityDelete(e:SyntheticEvent<HTMLButtonElement>, id:string){
@@ -17,9 +15,10 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
     deleteActivity(id);
   }
 
+
   return (
     <div className="grid grid-cols-1 divide-y-4 divide-solid">
-      {activities.map((activity) => (
+      {activitiesByDate.map((activity) => (
         <div 
           className="bg-white px-6 py-10 rounded-md" 
           key={activity.id}> {/* "key" prop should be in parent element*/}
@@ -39,10 +38,10 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
             <div className="flex flex-cols-2 place-self-end">
               <button 
                 className="bg-blue-600 text-white text-lg font-bold px-10 py-3 rounded-lg mx-3 w-32 h-12 align-middle"
-                onClick={() => selectActivity(activity.id)}>
+                onClick={() => activityStore.selectActivity(activity.id)}>
                 View
               </button>
-              {submitting && target === activity.id ? (
+              {loading && target === activity.id ? (
                 <div className="flex items-center justify-center bg-red-500 text-white text-lg font-bold rounded-lg mx-3 w-32 h-12">
                   <LoadingComponent />
                 </div>
@@ -60,4 +59,4 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
       ))}
     </div>
   );
-}
+})

@@ -1,15 +1,14 @@
+import { create } from "domain";
+import { observer } from "mobx-react-lite";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/store";
 
-interface Props{
-    activity: Activity | undefined;
-    closeForm: () => void;
-    createOrEdit: (activity: Activity) => void;
-    submitting: boolean;
-}
 
-export default function ActivityForm({activity:selectedActivity, closeForm, createOrEdit, submitting}:Props) {
+export default observer(function ActivityForm() {
+
+  const {activityStore} = useStore();
+  const {selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore;
   
   const initialState = selectedActivity ?? {
     id: '',
@@ -25,7 +24,7 @@ export default function ActivityForm({activity:selectedActivity, closeForm, crea
 
   function handleSubmit(event: SyntheticEvent) {
     event.preventDefault() //prevent form from submitting to view console.log()
-    createOrEdit(activity);
+    activity.id ? updateActivity(activity) : createActivity(activity)
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -34,7 +33,7 @@ export default function ActivityForm({activity:selectedActivity, closeForm, crea
 
   }
   return (
-    <div className="rounded-lg">
+    <div className="rounded-lg min-w-max">
       <form className="flex flex-col gap-4 p-5 bg-white border-2 rounded-lg" onSubmit={handleSubmit} autoComplete='off'>
         <input
           className="p-2 border-gray-200 border-2 rounded-md "
@@ -84,7 +83,7 @@ export default function ActivityForm({activity:selectedActivity, closeForm, crea
           placeholder="Venue"
         />
         <div className="grid grid-cols-2 gap-16">
-          {submitting ? (
+          {loading ? (
           <div className="flex justify-center items-center bg-green-400 rounded-md h-10 ml-5">
             <LoadingComponent />
           </div>) :
@@ -104,4 +103,4 @@ export default function ActivityForm({activity:selectedActivity, closeForm, crea
     </div>
     
   );
-}
+})
