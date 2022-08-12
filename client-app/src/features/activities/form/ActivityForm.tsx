@@ -1,16 +1,19 @@
 import { create } from "domain";
 import { observer } from "mobx-react-lite";
-import React, { ChangeEvent, SyntheticEvent, useState } from "react";
+import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import { v4 as uuid} from "uuid";
 
 
 export default observer(function ActivityForm() {
-
+  const history = useHistory();
   const {activityStore} = useStore();
-  const {selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore;
+  const {createActivity, updateActivity, loading, loadActivity, loadingInitial} = activityStore;
+  const {id} = useParams<{id: string}>();
   
-  const initialState = selectedActivity ?? {
+  const[activity, setActivity] = useState({
     id: '',
     title: '',
     category: '',
@@ -18,22 +21,43 @@ export default observer(function ActivityForm() {
     date: '',
     city: '',
     venue: ''
-  }
+  }); 
 
-  const[activity, setActivity] = useState(initialState); //is this bad practice here?
+  useEffect(() => {
+    if (id) {
+      loadActivity(id).then( activity => setActivity(activity!))
+    }
+  }, [id, loadActivity])
 
   function handleSubmit(event: SyntheticEvent) {
     event.preventDefault() //prevent form from submitting to view console.log()
-    activity.id ? updateActivity(activity) : createActivity(activity)
+    if (activity.id.length === 0) {
+      let newActivity = {
+        ...activity,
+        id: uuid()
+      }
+      createActivity(newActivity).then(() => {
+        history.push(`/activities/${newActivity.id}`);
+      })
+      
+    } else {
+      updateActivity(activity).then(() => {
+        history.push(`/activities/${activity.id}`);
+      })
+    }
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const {name, value} = event.target;
     setActivity({...activity, [name]: value})
-
   }
+
+  if (loadingInitial) {
+    return <LoadingComponent />
+  }
+
   return (
-    <div className="rounded-lg min-w-max">
+    <div className="rounded-lg min-w-1/2">
       <form className="flex flex-col gap-4 p-5 bg-white border-2 rounded-lg" onSubmit={handleSubmit} autoComplete='off'>
         <input
           className="p-2 border-gray-200 border-2 rounded-md "
@@ -88,16 +112,17 @@ export default observer(function ActivityForm() {
             <LoadingComponent />
           </div>) :
           (<input
-            className="bg-green-400 rounded-md text-white font-bold h-10 ml-5 cursor-pointer"
+            className="bg-green-400 rounded-md text-white font-bold h-10 cursor-pointer"
             type="submit"
             value="Submit"
           />)}
-          <input
-            className="bg-white rounded-md text-gray-600 border-2 border-gray-400 font-bold h-10 mr-5 cursor-pointer"
-            type="button"
-            value="Cancel"
-            onClick={closeForm}
-          />
+          <Link to='/activities'>
+            <input
+              className="bg-white rounded-md text-gray-600 border-2 border-gray-400 font-bold h-10 w-full mr-5 cursor-pointer"
+              type="button"
+              value="Cancel"
+            />
+          </Link>
         </div>
       </form>
     </div>

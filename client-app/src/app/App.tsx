@@ -2,30 +2,33 @@ import React, { useEffect} from "react";
 import "./styles.css";
 import Navbar from "./layout/Navbar";
 import ActivityDashboard from "../features/activities/dashboard/ActivityDashboard";
-import LoadingComponent from "./layout/LoadingComponent";
-import { useStore } from "./stores/store";
 import { observer } from "mobx-react-lite";
+import { Route, useLocation } from "react-router-dom";
+import HomePage from "../features/home/homepage";
+import ActivityForm from "../features/activities/form/ActivityForm";
+import ActivityDetails from "../features/activities/ActivityDetails";
 
 function App() {
-  const {activityStore} = useStore();
 
-  useEffect(() => {
-    activityStore.loadActivities();
-  }, [activityStore]);
-
-  if (activityStore.loadingInitial) return (
-    <div className="absolute left-1/2 top-1/2">
-      <LoadingComponent content='Loading app' />
-    </div>)
+  const location = useLocation();
 
   return (
-    <div >
-      {/* React <Fragment> is a parent element like a div, shorthand to <> */}
-      <Navbar />
-      <div className="flex justify-center  mt-10 mx-20">
-        <ActivityDashboard />
-      </div>
-    </div>
+    <>
+      <Route exact path='/' component={HomePage}/>
+      <Route 
+        path={'/(.+)'}
+        render={() => (
+          <>
+            <Navbar />
+            <div className="flex justify-center  mt-10 mx-20">
+              <Route exact path='/activities' component={ActivityDashboard}/>
+              <Route path='/activities/:id' component={ActivityDetails}/>
+              <Route key={location.key} path={['/createActivity', '/manage/:id']} component={ActivityForm}/>
+            </div>
+          </>
+        )}
+      />
+    </>
   );
 }
 

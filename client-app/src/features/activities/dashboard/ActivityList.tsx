@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { SyntheticEvent, useState } from "react";
+import { Link } from "react-router-dom";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
 
@@ -36,11 +37,12 @@ export default observer(function ActivityList() {
               </div>
             </div>
             <div className="flex flex-cols-2 place-self-end">
-              <button 
-                className="bg-blue-600 text-white text-lg font-bold px-10 py-3 rounded-lg mx-3 w-32 h-12 align-middle"
-                onClick={() => activityStore.selectActivity(activity.id)}>
-                View
-              </button>
+              <Link to={`/activities/${activity.id}`}>
+                <button 
+                  className="bg-blue-600 text-white text-lg font-bold px-10 py-3 rounded-lg mx-3 w-32 h-12 align-middle">
+                  View
+                </button>
+              </Link>
               {loading && target === activity.id ? (
                 <div className="flex items-center justify-center bg-red-500 text-white text-lg font-bold rounded-lg mx-3 w-32 h-12">
                   <LoadingComponent />
