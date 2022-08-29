@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { isIfStatement } from "typescript";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import ActivityFilters from "./ActivityFilters";
 import ActivityList from "./ActivityList";
 
 
@@ -24,11 +25,11 @@ export default observer(function ActivityDashboard() {
     </div>)
 
   return (
-    <div className="grid grid-cols-2 basis-full min-w-max">
+    <div className="flex gap-6">
       <div className="">
         <ActivityList/>
       </div>
-      <h2>Activity Filters</h2>
+      <ActivityFilters />
     </div>
   );
 })

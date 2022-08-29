@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 //import './index.css';
+import 'react-calendar/dist/Calendar.css'
 import './app/styles.css';
 import App from './app/App';
 import reportWebVitals from './reportWebVitals';

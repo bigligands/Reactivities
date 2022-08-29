@@ -15,3 +15,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.react-calendar {
+  border-width: 2px;
+  border-color: rgb(49, 49, 49);
+  width: 24rem ;
+  border-radius: 5px;
+}

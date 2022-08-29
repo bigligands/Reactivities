@@ -20,7 +20,7 @@ function App() {
         render={() => (
           <>
             <Navbar />
-            <div className="flex justify-center  mt-10 mx-20">
+            <div className="flex justify-center mt-10 ">
               <Route exact path='/activities' component={ActivityDashboard}/>
               <Route path='/activities/:id' component={ActivityDetails}/>
               <Route key={location.key} path={['/createActivity', '/manage/:id']} component={ActivityForm}/>
